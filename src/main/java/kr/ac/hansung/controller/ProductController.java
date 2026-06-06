@@ -12,10 +12,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import jakarta.validation.Valid;
 import kr.ac.hansung.dto.ProductDto;
 import kr.ac.hansung.entity.Product;
 import kr.ac.hansung.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.BindingResult;
 
 @Controller
 @RequestMapping("/products")
@@ -50,16 +54,48 @@ public class ProductController {
         return "products/list";
     }
 
-    @GetMapping("/{id}")
-    public String detail(@PathVariable Long id, Model model) {
-        model.addAttribute("product", productService.findById(id));
-        return "products/detail";
-    }
-
     @GetMapping("/add")
     public String addForm(Model model) {
         model.addAttribute("product", new ProductDto());
         return "products/add";
+    }
+
+    @GetMapping("/{id}/edit")
+    public String editProductForm(@PathVariable Long id, Model model) {
+        Product product = productService.findById(id);
+
+        // 기존 데이터를 DTO에 담아 폼에 pre-fill
+        ProductDto dto = new ProductDto();
+        dto.setName(product.getName());
+        dto.setPrice(product.getPrice());
+        dto.setStock(product.getStock());
+        dto.setDescription(product.getDescription());
+
+        model.addAttribute("productDto", dto);
+        model.addAttribute("productId", id);
+        return "products/edit";
+    }
+
+    @PostMapping("/{id}/edit")
+    public String editProduct(@PathVariable Long id,
+                              @Valid @ModelAttribute ProductDto productDto,
+                              BindingResult bindingResult,
+                              Model model,
+                              RedirectAttributes ra) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("productId", id);
+            return "products/edit";
+        }
+
+        productService.updateProduct(id, productDto);
+        ra.addFlashAttribute("successMessage", "상품이 수정되었습니다.");
+        return "redirect:/products";
+    }
+
+    @GetMapping("/{id}")
+    public String detail(@PathVariable Long id, Model model) {
+        model.addAttribute("product", productService.findById(id));
+        return "products/detail";
     }
 
     @PostMapping

@@ -32,7 +32,11 @@ public class SecurityConfig {
                 .requestMatchers("/", "/login", "/signup",
                                  "/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/products/add", "/products/*/delete").hasRole("ADMIN")
+                // config/SecurityConfig.java  (기존 requestMatchers 블록에 추가)
+                .requestMatchers("/products/add",
+                                 "/products/*/delete",
+                                 "/products/*/edit")   // ← 신규 추가
+                .hasRole("ADMIN")
                 .requestMatchers(HttpMethod.POST, "/products").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
