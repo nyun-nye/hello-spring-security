@@ -1,0 +1,22 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <body>
+    <footer
+      th:fragment="assignmentFooter"
+      class="assignment-footer"
+      style="
+        margin-top: 48px;
+        padding: 16px 12px;
+        border-top: 1px solid #ddd;
+        font-size: 0.9em;
+        color: #555;
+        text-align: center;
+        background: #fafafa;
+      "
+    >
+      <p th:text="${assignmentFooterLine}" style="margin: 0; line-height: 1.6">
+        | 실습 수행 일시: | 학번: | 성명:
+      </p>
+    </footer>
+  </body>
+</html>
